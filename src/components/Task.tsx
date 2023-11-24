@@ -1,12 +1,7 @@
 import React, { FC } from "react";
 
 import { Button } from "./Button";
-import { TaskType } from "../TodoList";
-
-type TaskPropsType = {
-  task: TaskType;
-  handleClick: (id: number) => void;
-};
+import { TaskPropsType } from "../common/types";
 
 export const Task: FC<TaskPropsType> = ({ task, handleClick }) => {
   return (

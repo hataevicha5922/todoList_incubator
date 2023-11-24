@@ -1,67 +1,45 @@
-import React, { FC, useState } from "react";
+import React, { FC, useState, ChangeEvent, KeyboardEvent } from "react";
 
 import { Button } from "./components/Button";
-import { Task } from "./components/Task";
+import { TodoListPropsType } from "./common/types";
+import { TasksList } from "./components/TasksList";
 
-export type TaskType = {
-  title: string;
-  isDone: boolean;
-  id: number;
-};
+export const TodoList: FC<TodoListPropsType> = ({
+  title,
+  tasks,
+  removeTask,
+  addTask,
+}) => {
+  const [newTaskTitle, setNewTaskTitle] = useState("");
 
-type TodoListPropsType = {
-  title: string;
-  tasks: Array<TaskType>;
-};
-
-type StatusTaskType = "All" | "Active" | "Completed";
-
-export const TodoList: FC<TodoListPropsType> = ({ title, tasks }) => {
-  const [taskList, setTaskList] = useState(tasks);
-
-  const removeTask = (taskId: number) => {
-    setTaskList(taskList.filter((t) => t.id !== taskId));
+  const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    setNewTaskTitle(e.target.value);
   };
 
-  const fitterTask = (taskStatus: StatusTaskType) => {
-    switch (taskStatus) {
-      case "All": {
-        setTaskList(tasks);
-        break;
-      }
-      case "Active": {
-        setTaskList(tasks.filter((task) => !task.isDone));
-        break;
-      }
-      case "Completed": {
-        setTaskList(tasks.filter((task) => task.isDone));
-        break;
-      }
-      default:
-        setTaskList(tasks);
+  const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      addTask(newTaskTitle);
+      setNewTaskTitle("");
     }
+  };
+
+  const onClickHandler = () => {
+    addTask(newTaskTitle);
+    setNewTaskTitle("");
   };
 
   return (
     <div className="todoList">
       <h3>{title}</h3>
       <div>
-        <input />
-        <Button title={"+"} />
-      </div>
-      <ul>
-        {taskList.map((task) => {
-          return <Task task={task} handleClick={removeTask} />;
-        })}
-      </ul>
-      <div>
-        <Button title={"All"} onClickHandler={() => fitterTask("All")} />
-        <Button title={"Active"} onClickHandler={() => fitterTask("Active")} />
-        <Button
-          title={"Completed"}
-          onClickHandler={() => fitterTask("Completed")}
+        <input
+          onChange={onChangeHandler}
+          value={newTaskTitle}
+          onKeyDown={onKeyDown}
         />
+        <Button title={"+"} onClickHandler={onClickHandler} />
       </div>
+      <TasksList tasks={tasks} removeTask={removeTask} />
     </div>
   );
 };
